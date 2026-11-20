@@ -356,6 +356,28 @@ upstream.
 | Stale host claims in durable pieces    | Editor claims host on its first edit     | Server and clients delete claims (tested); or patch the fork |
 | Show any combination of parts          | Renders a layout from the MNX            | Add a reader layout and score to the rendered MNX (tested)   |
 | Page turns placed for performers       | Not supported                            | Patch the fork or request upstream                           |
+| Octave clefs (guitar and bass 8vb)     | Engine draws notes an octave too high    | Patch the fork's engine first; offer upstream                |
+| Hidden chord symbols                   | Converter imports MusicXML `<harmony print-object="no">` as visible | Patch the fork's converter; offer upstream    |
+
+Seven of the band's charts were converted from MuseScore and rendered. The
+music itself comes through intact: in the five checked note by note, every
+note, grace note and tuplet matches MuseScore's MusicXML (13,186 notes in
+all), extra voices on a staff are kept, and titles, composers, parts,
+transposition, articulations, dynamics and key changes are right. Two bugs
+affect most charts:
+
+- **Octave clefs** appear in 4 of the 5 charts, for guitar and bass. Their
+  notes and rhythm slashes are drawn high above the staff, colliding with
+  chord symbols, so these parts are hard to read until the engine is fixed.
+- **Hidden chord symbols** appear in 4 of the 5. MuseScore writes a chord
+  symbol on every guitar slash and hides the repeats; shown, they pile up.
+
+Smaller issues: the converter's generated layout reorders staves (Allaparte
+builds its own layouts, so this doesn't matter), a transposing part's label
+repeats its key ("Bb Clarinet in B♭"), tempo and rehearsal marks can appear
+above several staves, and one symbol in Quejas de Bandoneón renders as a
+missing-glyph box. A score MuseScore considers corrupted can't be exported
+at all until it's repaired in MuseScore.
 
 ## Open questions
 
@@ -380,9 +402,6 @@ upstream.
 
 ### To verify
 
-- **The band's real MuseScore exports** convert and render, including title
-  and credits. Viritura's own website keeps a fallback for MusicXML imports
-  its parser rejects, so failures are a known risk.
 - **Accidentals** come out right when the file's courtesy-accidental choices
   (`accidentalDisplay`) are removed. The spikes didn't strip them.
 - **iPad storage** survives: installing to the Home Screen and requesting
