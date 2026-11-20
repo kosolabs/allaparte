@@ -356,7 +356,7 @@ upstream.
 | Stale host claims in durable pieces    | Editor claims host on its first edit     | Server and clients delete claims (tested); or patch the fork |
 | Show any combination of parts          | Renders a layout from the MNX            | Add a reader layout and score to the rendered MNX (tested)   |
 | Page turns placed for performers       | Not supported                            | Patch the fork or request upstream                           |
-| Octave clefs (guitar and bass 8vb)     | Engine draws notes an octave too high    | Patch the fork's engine first; offer upstream                |
+| Octave clefs (guitar and bass 8vb)     | Converter adds an octave transposition the concert clef already carries | Patch the fork's converter first; offer upstream |
 | Hidden chord symbols                   | Converter imports MusicXML `<harmony print-object="no">` as visible | Patch the fork's converter; offer upstream    |
 
 Seven of the band's charts were converted from MuseScore and rendered. The
@@ -367,8 +367,10 @@ transposition, articulations, dynamics and key changes are right. Two bugs
 affect most charts:
 
 - **Octave clefs** appear in 4 of the 5 charts, for guitar and bass. Their
-  notes and rhythm slashes are drawn high above the staff, colliding with
-  chord symbols, so these parts are hard to read until the engine is fixed.
+  notes and rhythm slashes are drawn an octave too high, colliding with chord
+  symbols. MuseScore's concert-score export gives the octave both in the clef
+  (treble-8vb, bass-8vb) and in `<for-part><part-transpose>`, and the
+  converter applies both.
 - **Hidden chord symbols** appear in 4 of the 5. MuseScore writes a chord
   symbol on every guitar slash and hides the repeats; shown, they pile up.
 
