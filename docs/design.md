@@ -257,7 +257,10 @@ others are online. Changes made offline merge when the device reconnects.
 
 Live edits travel device to device over WebRTC, which is what Viritura's
 editor speaks, so the editor needs no changes. The server only introduces
-peers (signaling) and holds a snapshot of each document.
+peers (signaling) and holds a snapshot of each document. On Cloudflare, a Mac
+and an iPad on the rehearsal Wi-Fi and an iPhone on LTE all connected, and
+edits reached every device in under 100 ms (see [the Cloudflare
+spike](spikes/cloudflare-live.md)).
 
 The alternative is Yjs over WebSocket, with the server holding each
 document. It avoids WebRTC's weak points (device-to-device connections on
@@ -377,8 +380,6 @@ upstream.
 
 ### To verify
 
-- **iPads on the rehearsal Wi-Fi** connect to each other over WebRTC. If not,
-  Allaparte needs a TURN relay server, or a different sync design.
 - **The band's real MuseScore exports** convert and render, including title
   and credits. Viritura's own website keeps a fallback for MusicXML imports
   its parser rejects, so failures are a known risk.

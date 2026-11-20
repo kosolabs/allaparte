@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "allaparte-spike",
+  "main": "src/worker/index.ts",
+  "compatibility_date": "2026-11-01",
+  "routes": [{ "pattern": "spike.allaparte.com", "custom_domain": true }],
+  "assets": {
+    "directory": "./dist",
+    "run_worker_first": ["/live/*"]
+  },
+  "durable_objects": {
+    "bindings": [
+      { "name": "SIGNALING", "class_name": "Signaling" },
+      { "name": "SNAPSHOTS", "class_name": "RoomSnapshot" }
+    ]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Signaling", "RoomSnapshot"] }],
+  "limits": { "cpu_ms": 30000 }
+}

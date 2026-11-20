@@ -1,0 +1,23 @@
+{
+  "name": "allaparte-spike-cloudflare-live",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "wrangler types && tsc --noEmit",
+    "dev": "vite build && wrangler dev",
+    "deploy": "vite build && wrangler deploy"
+  },
+  "dependencies": {
+    "y-indexeddb": "9.0.12",
+    "y-webrtc": "10.3.0",
+    "yjs": "13.6.33"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "7.3.1",
+    "svelte": "5.58.0",
+    "typescript": "5.9.3",
+    "vite": "8.3.8",
+    "wrangler": "4.165.0"
+  }
+}
