@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { editorUrl } from "#lib/editor.js";
   import { scoreEngine } from "#lib/engine.js";
   import { readMetadata } from "#lib/metadata.js";
   import { toReaderPresentation } from "#lib/reader-presentation.js";
@@ -6,10 +7,16 @@
   import type { DisplayList, Engine, LayoutWorker } from "#viritura/engine";
   import { Alert, Button, CircularProgress } from "kosui";
   import { resolve } from "$app/paths";
-  import { ArrowLeft } from "@lucide/svelte";
+  import { ArrowLeft, SquarePen } from "@lucide/svelte";
   import ScorePage from "./score-page.svelte";
 
-  const { mnx, ensembleId }: { mnx: Json; ensembleId: string } = $props();
+  interface Props {
+    mnx: Json;
+    ensembleId: string;
+    pieceId: string;
+  }
+
+  const { mnx, ensembleId, pieceId }: Props = $props();
 
   let width = $state(0);
   let scoreIndex = $state(0);
@@ -75,6 +82,14 @@
       {/each}
     </select>
   {/if}
+  <Button
+    href={editorUrl(pieceId)}
+    target="_blank"
+    icon={SquarePen}
+    variant="plain"
+  >
+    Edit in Viritura
+  </Button>
 </header>
 
 {#if error}<Alert color="error">{error}</Alert>{/if}
