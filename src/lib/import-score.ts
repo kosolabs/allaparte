@@ -2,25 +2,25 @@ import {
   convertMusicXmlToMnx,
   convertMxlToMnx,
   DiagnosticCollector,
-  type Diagnostic,
-  type Json,
-} from "./viritura/index.js";
+  type MnxDiagnostic,
+} from "#viritura/musicxml";
+import type { Json } from "./json.js";
 
 export interface ImportedScore {
   mnx: Json;
-  diagnostics: readonly Diagnostic[];
+  diagnostics: readonly MnxDiagnostic[];
 }
 
 export async function importScore(file: File): Promise<ImportedScore> {
   const diagnostics = new DiagnosticCollector();
-  const mnx = await convert(file, diagnostics);
+  const mnx = (await convert(file, diagnostics)) as Json;
   return { mnx, diagnostics: diagnostics.all() };
 }
 
 async function convert(
   file: File,
   diagnostics: DiagnosticCollector,
-): Promise<Json> {
+): Promise<object> {
   const options = { includeVendorExtensions: true, diagnostics };
   switch (file.name.toLowerCase().split(".").at(-1)) {
     case "mxl":

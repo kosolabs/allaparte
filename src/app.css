@@ -1,2 +1,4 @@
 @import "tailwindcss";
 @import "kosui/theme.css";
+
+@source not "../vendor";

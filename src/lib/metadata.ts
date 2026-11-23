@@ -1,4 +1,4 @@
-import type { Json } from "./viritura/index.js";
+import type { Json } from "./json.js";
 
 export interface Metadata {
   title?: string;

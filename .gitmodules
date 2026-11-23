@@ -1,0 +1,4 @@
+[submodule "vendor/viritura"]
+	path = vendor/viritura
+	url = https://github.com/kosolabs/viritura.git
+	branch = main

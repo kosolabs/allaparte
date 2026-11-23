@@ -2,14 +2,14 @@
   import { resolve } from "$app/paths";
   import { importScore } from "#lib/import-score.js";
   import { library } from "#lib/library.svelte.js";
-  import type { Diagnostic } from "#lib/viritura/index.js";
+  import type { MnxDiagnostic } from "#viritura/musicxml";
   import { Alert, Button } from "kosui";
   import { Upload } from "@lucide/svelte";
 
   interface Report {
     file: string;
     error?: string;
-    diagnostics: readonly Diagnostic[];
+    diagnostics: readonly MnxDiagnostic[];
   }
 
   let input: HTMLInputElement;

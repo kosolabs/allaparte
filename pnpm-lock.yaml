@@ -169,15 +169,6 @@ importers:
       '@lucide/svelte':
         specifier: ^1.1.0
         version: 1.77.0(svelte@5.59.1(@typescript-eslint/types@8.72.1))
-      '@viritura/score-engine':
-        specifier: 0.2.1-next.82
-        version: 0.2.1-next.82
-      '@xmldom/xmldom':
-        specifier: ^0.9.12
-        version: 0.9.12
-      jszip:
-        specifier: ^3.10.2
-        version: 3.10.2
       kosui:
         specifier: ^0.5.0
         version: 0.5.0(svelte@5.59.1(@typescript-eslint/types@8.72.1))
@@ -224,6 +215,9 @@ importers:
       globals:
         specifier: 17.14.0
         version: 17.14.0
+      jszip:
+        specifier: ^3.10.2
+        version: 3.10.2
       prettier:
         specifier: 3.9.10
         version: 3.9.10
@@ -704,9 +698,6 @@ packages:
     resolution: {integrity: sha512-SB8xqipSzZHUePCCLNeYxqnxq83X61/qzNhjQGbTfjxGZIeOEP7tBgWYX05Tcd6CgE02WdTJnh5b8kMZJ/+bnQ==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@viritura/score-engine@0.2.1-next.82':
-    resolution: {integrity: sha512-I/fpsT7hWmOXtszJRSnoSGx2fXh2GHiJsDEafFgWxYfPaQY+5qtGCNtohTNGJZ+byYPp0MiYZIgGdiWxJjHLmQ==}
-
   '@vitest/mocker@5.0.5':
     resolution: {integrity: sha512-xLL3lkDegJZw+MGoGaCCsFayDZthGgpAtr3Vziyfc4p7xH89K7KRPcRBBh/kEYm0Aqkt5DtTmkYpBtRV/FrHZg==}
     peerDependencies:
@@ -720,10 +711,6 @@ packages:
 
   '@vitest/spy@5.0.5':
     resolution: {integrity: sha512-lwJRExuH417257Q5wv9QYugN9IMJkoxcrKrYxGPQkBzl7wlNpTUxD/5yNX4ESKVUIShKPgkGchYPFMWOOk0wzw==}
-
-  '@xmldom/xmldom@0.9.12':
-    resolution: {integrity: sha512-5AXjrcMClTryPe9LgZrygpB1lj7s0S9E0+W+AHaVKAVyHanafK86iPSvG5xHVSp/jC+VH1UXu0TAEmY279xH7A==}
-    engines: {node: '>=14.6'}
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -2050,8 +2037,6 @@ snapshots:
       '@typescript-eslint/types': 8.72.1
       eslint-visitor-keys: 5.0.1
 
-  '@viritura/score-engine@0.2.1-next.82': {}
-
   '@vitest/mocker@5.0.5(vite@8.3.5(@types/node@26.6.6)(jiti@2.7.0))':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
@@ -2062,8 +2047,6 @@ snapshots:
       vite: 8.3.5(@types/node@26.6.6)(jiti@2.7.0)
 
   '@vitest/spy@5.0.5': {}
-
-  '@xmldom/xmldom@0.9.12': {}
 
   acorn-jsx@5.3.2(acorn@8.19.0):
     dependencies:

@@ -8,22 +8,22 @@
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "prepare": "svelte-kit sync && node scripts/stage-engine.mjs",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "prepare": "svelte-kit sync",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts --fail-on-warnings",
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
     "test:unit": "vitest run",
     "test": "pnpm run \"/^(build|check|lint|test:unit)$/\"",
-    "vendor:viritura": "node scripts/vendor-viritura.mjs"
+    "build:viritura": "cd vendor/viritura && pnpm install --frozen-lockfile && pnpm wasm:build && pnpm build:npm-packages && cd ../.. && node scripts/stage-engine.mjs"
   },
   "imports": {
-    "#lib/*": "./src/lib/*"
+    "#lib/*": "./src/lib/*",
+    "#viritura/engine": "./vendor/viritura/packages/score-engine/dist/index.js",
+    "#viritura/musicxml": "./vendor/viritura/packages/musicxml/src/index.ts",
+    "#viritura/crdt/*": "./vendor/viritura/packages/crdt/src/*"
   },
   "dependencies": {
     "@lucide/svelte": "^1.1.0",
-    "@viritura/score-engine": "0.2.1-next.82",
-    "@xmldom/xmldom": "^0.9.12",
-    "jszip": "^3.10.2",
     "kosui": "^0.5.0",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.33"
@@ -41,6 +41,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-svelte": "3.23.1",
     "globals": "17.14.0",
+    "jszip": "^3.10.2",
     "prettier": "3.9.10",
     "prettier-plugin-svelte": "4.1.1",
     "prettier-plugin-tailwindcss": "0.8.1",

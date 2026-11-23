@@ -13,6 +13,7 @@ export default defineConfig({
       adapter: adapter({ fallback: "index.html" }),
     }),
   ],
-  server: { port: 5180 },
+  resolve: { dedupe: ["yjs"] },
+  server: { port: 5180, watch: { ignored: ["**/vendor/viritura/engine/**"] } },
   test: { include: ["src/**/*.test.ts"] },
 });

@@ -315,7 +315,8 @@ is only worth it if performance demands it.
 
 Allaparte is a standalone Svelte app built with
 [Kosui](https://kosui.kosolabs.com). It reuses Viritura's layout engine,
-**`@viritura/score-engine`** (Rust compiled to WebAssembly), from npm.
+**`@viritura/score-engine`** (Rust compiled to WebAssembly), built from
+Allaparte's Viritura fork.
 
 The viewer around the engine (scrolling, zoom, page turns, the annotation
 layer) is where Allaparte needs the most customization, so Allaparte has its
@@ -331,12 +332,15 @@ spike](spikes/viritura-live.md) for the sync design's evidence.
 ### The Viritura fork
 
 Allaparte depends heavily on Viritura and maintains a fork of it (Viritura is
-MIT-licensed). The MNX-to-Yjs projection and the MusicXML converter aren't on
-npm, so `scripts/vendor-viritura.mjs` bundles them from a checkout of the fork
-into `src/lib/viritura/`, recording the commit. The editor is built from the
-same fork. The layout engine is on npm: upstream publishes one for every
-change to it, so Allaparte pins a release close to the bundled commit. If the
-engine ever needs a patch, it is built from the fork too.
+MIT-licensed). The fork is a Git submodule at `vendor/viritura`, and the
+single source for everything Allaparte uses from Viritura: the layout engine,
+the MNX-to-Yjs projection, the MusicXML converter, and the editor Allaparte
+hosts. Pinning one commit keeps them consistent with each other.
+
+The converter and projection are imported from the submodule's source. The
+engine is built there by `pnpm build:viritura`, which needs Rust. Committing
+the built engine or publishing it as a release would spare developers Rust,
+but keeps binaries in Git history or adds a release for every change.
 
 Allaparte relies on Viritura internals that upstream doesn't promise to keep
 stable, such as the score's Yjs layout, the host claim and the live
@@ -351,14 +355,15 @@ Viritura generally can be offered upstream.
 At first, whoever needs the editor runs it on their own machine, with its API
 address set to Allaparte's server. Hosting it at editor.allaparte.com comes
 later, and needs a content security policy that allows Allaparte's server
-(the built-in one allows only Viritura's) and the 119 MB SoundFont in R2.
+(the built-in one allows only Viritura's, so a same-origin proxy may avoid
+the change) and somewhere to serve the 119 MB SoundFont.
 
 | Need                                   | In Viritura today                        | Allaparte's approach                                         |
 | -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
 | Self-hosted editor uses Allaparte      | API address is a build setting           | Build the fork with Allaparte's server as its API address    |
 | Ignore page layout, engraving choices  | No engine option                         | Strip them from the MNX before rendering (tested)            |
-| MNX-to-Yjs projection                  | In unpublished `@viritura/crdt`          | Bundle from the fork                                         |
-| MusicXML to MNX in the browser         | `@viritura/musicxml` is unpublished      | Bundle from the fork                                         |
+| MNX-to-Yjs projection                  | In unpublished `@viritura/crdt`          | Import from the fork                                         |
+| MusicXML to MNX in the browser         | `@viritura/musicxml` is unpublished      | Import from the fork                                         |
 | Stale host claims in durable pieces    | Editor claims host on its first edit     | Server and clients delete claims (tested); or patch the fork |
 | Show any combination of parts          | Renders a layout from the MNX            | Add a reader layout and score to the rendered MNX (tested)   |
 | Page turns placed for performers       | Not supported                            | Patch the fork or request upstream                           |
