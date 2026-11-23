@@ -1,3 +1,7 @@
 .DS_Store
 logs/
 .wrangler/
+node_modules/
+/.svelte-kit/
+/build/
+/static/score-engine/

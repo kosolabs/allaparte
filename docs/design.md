@@ -315,8 +315,7 @@ is only worth it if performance demands it.
 
 Allaparte is a standalone Svelte app built with
 [Kosui](https://kosui.kosolabs.com). It reuses Viritura's layout engine,
-**`@viritura/score-engine`** (Rust compiled to WebAssembly), built from
-Allaparte's Viritura fork.
+**`@viritura/score-engine`** (Rust compiled to WebAssembly), from npm.
 
 The viewer around the engine (scrolling, zoom, page turns, the annotation
 layer) is where Allaparte needs the most customization, so Allaparte has its
@@ -332,10 +331,12 @@ spike](spikes/viritura-live.md) for the sync design's evidence.
 ### The Viritura fork
 
 Allaparte depends heavily on Viritura and maintains a fork of it (Viritura is
-MIT-licensed). The fork is the single source for everything Allaparte uses
-from Viritura: the layout engine, the MNX-to-Yjs projection, the MusicXML
-converter, and the editor Allaparte hosts. Building all of them from one
-commit keeps them consistent with each other.
+MIT-licensed). The MNX-to-Yjs projection and the MusicXML converter aren't on
+npm, so `scripts/vendor-viritura.mjs` bundles them from a checkout of the fork
+into `src/lib/viritura/`, recording the commit. The editor is built from the
+same fork. The layout engine is on npm: upstream publishes one for every
+change to it, so Allaparte pins a release close to the bundled commit. If the
+engine ever needs a patch, it is built from the fork too.
 
 Allaparte relies on Viritura internals that upstream doesn't promise to keep
 stable, such as the score's Yjs layout, the host claim and the live
@@ -356,8 +357,8 @@ later, and needs a content security policy that allows Allaparte's server
 | -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
 | Self-hosted editor uses Allaparte      | API address is a build setting           | Build the fork with Allaparte's server as its API address    |
 | Ignore page layout, engraving choices  | No engine option                         | Strip them from the MNX before rendering (tested)            |
-| MNX-to-Yjs projection                  | In unpublished `@viritura/crdt`          | Build from the fork                                          |
-| MusicXML to MNX in the browser         | `@viritura/musicxml` is unpublished      | Build from the fork                                          |
+| MNX-to-Yjs projection                  | In unpublished `@viritura/crdt`          | Bundle from the fork                                         |
+| MusicXML to MNX in the browser         | `@viritura/musicxml` is unpublished      | Bundle from the fork                                         |
 | Stale host claims in durable pieces    | Editor claims host on its first edit     | Server and clients delete claims (tested); or patch the fork |
 | Show any combination of parts          | Renders a layout from the MNX            | Add a reader layout and score to the rendered MNX (tested)   |
 | Page turns placed for performers       | Not supported                            | Patch the fork or request upstream                           |
