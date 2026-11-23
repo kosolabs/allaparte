@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import * as Y from "yjs";
-import { readScore, writeScore } from "./documents.js";
+import { readScore, writeScore } from "./score.js";
 
 test("a score survives the round trip through its document and a peer", () => {
   const mnx = {

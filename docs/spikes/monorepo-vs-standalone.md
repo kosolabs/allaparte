@@ -11,8 +11,7 @@ The same minimal app was built both ways: a React page that loads an MNX file
 and renders it with a part picker, staff-size control and view modes. Both
 versions were rendered in WebKit at iPad size.
 
-- **Monorepo:** worktree `../viritura-allaparte-spike`, branch
-  `spike/allaparte-monorepo` (uncommitted), using workspace packages.
+- **Monorepo:** a Viritura worktree (since deleted), using workspace packages.
 - **Standalone:** a scratch folder using `@viritura/score-engine@0.2.0` and
   `@viritura/score-viewer-react@0.1.1` from npm.
 

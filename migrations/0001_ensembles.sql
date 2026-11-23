@@ -1,0 +1,10 @@
+CREATE TABLE ensembles (
+  id TEXT PRIMARY KEY,
+  name TEXT NOT NULL,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE rooms (
+  id TEXT PRIMARY KEY,
+  ensemble_id TEXT NOT NULL REFERENCES ensembles (id)
+);

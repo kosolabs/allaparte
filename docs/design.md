@@ -231,7 +231,7 @@ flowchart TB
     Signaling["Durable Object: signaling (one)"]
     Snapshots["Durable Objects: snapshot store (one per room)"]
     D1[("D1: ensembles, rooms, metadata")]
-    R2[("R2: snapshots, original files")]
+    R2[("R2: original files")]
   end
 
   Device <-->|"live edits: WebRTC, device to device"| Editor
@@ -239,7 +239,6 @@ flowchart TB
   Editor -->|"HTTPS + signaling"| Cloudflare
   Worker --> D1
   Worker --> R2
-  Snapshots --> R2
 ```
 
 ### Documents
@@ -288,8 +287,8 @@ large snapshots.
   document's latest state. On upload it merges the incoming state into the
   stored one (`Y.mergeUpdates`) rather than replacing it, and deletes any
   Viritura host claim (`_meta.hostClientId`), which would otherwise lock
-  later editors out. The bytes live in R2, since a snapshot can be several
-  megabytes.
+  later editors out. The bytes live in the object's own storage, in 1 MB
+  chunks.
 - **Ensemble API** (a Worker): registers new pieces in an ensemble, and
   stores and returns original uploaded files (in R2).
 - **`/auth/me`** (a Worker route): answers "signed out", because the
@@ -424,5 +423,3 @@ at all until it's repaired in MuseScore.
   persistent storage (`navigator.storage.persist()`) keeps Safari from
   clearing device copies and annotations.
 - **The app opens offline**, through its service worker. Not built yet.
-- **The self-hosted editor's name prompt** works for a first-time guest. The
-  spike preset the name.
