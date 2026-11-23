@@ -2,7 +2,8 @@ import { createSubscriber } from "svelte/reactivity";
 import type * as Y from "yjs";
 import { openLibrary, openScore, writeScore } from "./documents.js";
 import { readMetadata, type Metadata } from "./metadata.js";
-import { generateRoomId, type Json } from "./viritura/index.js";
+import { generateRoomId } from "#viritura/crdt/roomId.ts";
+import type { Json } from "./json.js";
 
 export interface Piece extends Metadata {
   id: string;

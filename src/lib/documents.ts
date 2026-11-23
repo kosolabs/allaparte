@@ -1,10 +1,8 @@
 import { IndexeddbPersistence } from "y-indexeddb";
 import * as Y from "yjs";
-import {
-  readJsonFromYDoc,
-  syncJsonToYDoc,
-  type Json,
-} from "./viritura/index.js";
+import { syncJsonToYDoc } from "#viritura/crdt/yProjection/syncJsonToYDoc.ts";
+import { readJsonFromYDoc } from "#viritura/crdt/yProjection/yDocToJson.ts";
+import type { Json } from "./json.js";
 
 // Viritura's editor reads the score from this key.
 const SCORE_ROOT = "score";

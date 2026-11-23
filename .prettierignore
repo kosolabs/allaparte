@@ -1,5 +1,5 @@
 pnpm-lock.yaml
 /docs/
 /spikes/
-/src/lib/viritura/index.js
+/vendor/
 /static/score-engine/

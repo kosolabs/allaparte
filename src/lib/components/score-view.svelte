@@ -2,12 +2,8 @@
   import { scoreEngine } from "#lib/engine.js";
   import { readMetadata } from "#lib/metadata.js";
   import { toReaderPresentation } from "#lib/reader-presentation.js";
-  import type { Json } from "#lib/viritura/index.js";
-  import type {
-    DisplayList,
-    Engine,
-    LayoutWorker,
-  } from "@viritura/score-engine";
+  import type { Json } from "#lib/json.js";
+  import type { DisplayList, Engine, LayoutWorker } from "#viritura/engine";
   import { Alert, Button, CircularProgress } from "kosui";
   import { resolve } from "$app/paths";
   import { ArrowLeft } from "@lucide/svelte";

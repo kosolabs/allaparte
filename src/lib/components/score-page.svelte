@@ -1,9 +1,5 @@
 <script lang="ts">
-  import type {
-    DisplayList,
-    Engine,
-    PageGeometry,
-  } from "@viritura/score-engine";
+  import type { DisplayList, Engine, PageGeometry } from "#viritura/engine";
 
   interface Props {
     engine: Engine;
