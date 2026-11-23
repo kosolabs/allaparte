@@ -5,15 +5,19 @@
   "license": "MIT",
   "packageManager": "pnpm@12.17.0",
   "scripts": {
-    "dev": "vite dev",
+    "dev": "pnpm run \"/^dev:/\"",
+    "dev:app": "vite dev",
+    "dev:server": "wrangler d1 migrations apply allaparte --local && wrangler dev --port 8787",
     "build": "vite build",
     "preview": "vite preview",
-    "prepare": "svelte-kit sync",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts --fail-on-warnings",
+    "prepare": "svelte-kit sync && wrangler types",
+    "check": "svelte-kit sync && wrangler types && tsc -p worker && svelte-check --tsconfig ./tsconfig.json --config ./vite.config.ts --fail-on-warnings",
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
     "test:unit": "vitest run",
     "test": "pnpm run \"/^(build|check|lint|test:unit)$/\"",
+    "ensemble:create": "node scripts/create-ensemble.mjs",
+    "ensemble:list": "wrangler d1 execute allaparte --command \"SELECT * FROM ensembles\"",
     "build:viritura": "cd vendor/viritura && pnpm install --frozen-lockfile && pnpm wasm:build && pnpm build:npm-packages && cd ../.. && node scripts/stage-engine.mjs"
   },
   "imports": {
@@ -26,6 +30,7 @@
     "@lucide/svelte": "^1.1.0",
     "kosui": "^0.5.0",
     "y-indexeddb": "^9.0.12",
+    "y-webrtc": "10.3.0",
     "yjs": "^13.6.33"
   },
   "devDependencies": {
@@ -51,6 +56,7 @@
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
     "vite": "8.3.5",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "wrangler": "4.165.0"
   }
 }

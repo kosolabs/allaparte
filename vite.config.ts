@@ -4,6 +4,9 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "vitest/config";
 
+const server = { target: "http://localhost:8787", ws: true };
+const proxy = { "/api": server, "/auth": server, "/live": server };
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
@@ -14,6 +17,12 @@ export default defineConfig({
     }),
   ],
   resolve: { dedupe: ["yjs"] },
-  server: { port: 5180, watch: { ignored: ["**/vendor/viritura/engine/**"] } },
-  test: { include: ["src/**/*.test.ts"] },
+  server: {
+    port: 5180,
+    strictPort: true,
+    proxy,
+    watch: { ignored: ["**/vendor/viritura/engine/**"] },
+  },
+  preview: { port: 5180, strictPort: true, proxy },
+  test: { include: ["{src,worker}/**/*.test.ts"] },
 });

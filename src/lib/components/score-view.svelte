@@ -9,7 +9,7 @@
   import { ArrowLeft } from "@lucide/svelte";
   import ScorePage from "./score-page.svelte";
 
-  const { mnx }: { mnx: Json } = $props();
+  const { mnx, ensembleId }: { mnx: Json; ensembleId: string } = $props();
 
   let width = $state(0);
   let scoreIndex = $state(0);
@@ -58,7 +58,7 @@
 
 <header class="flex items-center gap-2 p-2">
   <Button
-    href={resolve("/")}
+    href={resolve("/e/[ensemble]", { ensemble: ensembleId })}
     icon={ArrowLeft}
     aria-label="All pieces"
     variant="plain"
@@ -80,7 +80,7 @@
 {#if error}<Alert color="error">{error}</Alert>{/if}
 <main bind:clientWidth={width}>
   {#if engine && layout}
-    {#each pages as page (page)}
+    {#each pages as page (page.index)}
       <ScorePage {engine} {layout} {page} />
     {/each}
   {:else if !error}

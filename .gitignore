@@ -5,3 +5,4 @@ node_modules/
 /.svelte-kit/
 /build/
 /static/score-engine/
+/worker-configuration.d.ts
