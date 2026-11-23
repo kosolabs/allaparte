@@ -342,10 +342,15 @@ stable, such as the score's Yjs layout, the host claim and the live
 endpoints. So the fork rebases onto upstream when a change is worth having,
 not continuously, and each rebase is checked against the live-editing spike.
 
-Allaparte-specific changes go in the fork when that's simpler than working
-around Viritura from outside. Keeping those changes few and small keeps
-rebases cheap. Changes that would suit Viritura generally can be offered
-upstream.
+The fork has no patches for now: it is a pinned copy of upstream. Allaparte
+patches it only after a problem has been reproduced in Allaparte itself and
+working around it from outside would be harder. Changes that would suit
+Viritura generally can be offered upstream.
+
+At first, whoever needs the editor runs it on their own machine, with its API
+address set to Allaparte's server. Hosting it at editor.allaparte.com comes
+later, and needs a content security policy that allows Allaparte's server
+(the built-in one allows only Viritura's) and the 119 MB SoundFont in R2.
 
 | Need                                   | In Viritura today                        | Allaparte's approach                                         |
 | -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
@@ -356,8 +361,8 @@ upstream.
 | Stale host claims in durable pieces    | Editor claims host on its first edit     | Server and clients delete claims (tested); or patch the fork |
 | Show any combination of parts          | Renders a layout from the MNX            | Add a reader layout and score to the rendered MNX (tested)   |
 | Page turns placed for performers       | Not supported                            | Patch the fork or request upstream                           |
-| Octave clefs (guitar and bass 8vb)     | Converter adds an octave transposition the concert clef already carries | Patch the fork's converter first; offer upstream |
-| Hidden chord symbols                   | Converter imports MusicXML `<harmony print-object="no">` as visible | Patch the fork's converter; offer upstream    |
+| Octave clefs (guitar and bass 8vb)     | Converter adds an octave transposition the concert clef already carries | Known, not patched; a fix is on the fork's `parked/octave-clefs` branch |
+| Hidden chord symbols                   | Converter imports MusicXML `<harmony print-object="no">` as visible | Known, not patched; a fix that keeps but doesn't draw them is on `feat/hidden-chord-symbols` |
 
 Seven of the band's charts were converted from MuseScore and rendered. The
 music itself comes through intact: in the five checked note by note, every
@@ -371,8 +376,9 @@ affect most charts:
   symbols. MuseScore's concert-score export gives the octave both in the clef
   (treble-8vb, bass-8vb) and in `<for-part><part-transpose>`, and the
   converter applies both.
-- **Hidden chord symbols** appear in 4 of the 5. MuseScore writes a chord
-  symbol on every guitar slash and hides the repeats; shown, they pile up.
+- **Hidden chord symbols** appear in 4 of the 5. The arranger repeats each
+  chord on every guitar slash, hidden, so MuseScore's playback strikes it
+  there; the converter shows them all, and they pile up.
 
 Smaller issues: the converter's generated layout reorders staves (Allaparte
 builds its own layouts, so this doesn't matter), a transposing part's label
@@ -393,7 +399,9 @@ at all until it's repaired in MuseScore.
 - **Changes back to MuseScore.** Fixes made in Allaparte or the Viritura
   editor should be able to reach the arranger's MuseScore file. Importing a
   file into MuseScore creates a new score, so this may mean applying changes
-  by ID rather than re-importing a whole file.
+  by ID rather than re-importing a whole file. Whatever the route, import must
+  not drop anything the arranger authored, even what Allaparte never displays,
+  such as hidden chord symbols.
 - **Version history (later).** Restoring an old version can't replace the
   document with a snapshot: every device holding newer state would merge it
   back, undoing the restore. Applying the old version as new edits avoids
