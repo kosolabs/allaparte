@@ -33,6 +33,15 @@ VITE_VIRITURA_API_BASE_URL=http://localhost:8787 pnpm dev:editor
 Run `pnpm build:viritura` again whenever `vendor/viritura` changes.
 `pnpm test` builds, checks, lints and tests.
 
+To see how the engine draws an MNX file, render it to SVG. This uses the engine
+source in `vendor/viritura`, so it needs no `pnpm build:viritura`:
+
+```bash
+pnpm render score.mnx
+```
+
+If the file has several scores, add the index of one, counting from 0.
+
 ## Deploying
 
 Allaparte runs on Cloudflare: the app and its server at `app.allaparte.com`, and
