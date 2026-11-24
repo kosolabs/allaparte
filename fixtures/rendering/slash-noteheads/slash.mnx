@@ -1,0 +1,219 @@
+{
+  "mnx": {
+    "version": 1
+  },
+  "global": {
+    "measures": [
+      {
+        "id": "01a20ff3-2f4e-72ab-852d-865b5635fa25",
+        "number": 1,
+        "time": {
+          "count": 4,
+          "unit": 4
+        },
+        "key": {
+          "fifths": 0
+        }
+      },
+      {
+        "id": "01a20ff3-2f4e-701d-80e1-994ca41622ce",
+        "number": 2
+      },
+      {
+        "id": "01a20ff3-2f4e-7493-9dda-a2a9331d2ee6",
+        "number": 3,
+        "time": {
+          "count": 4,
+          "unit": 2
+        },
+        "barline": {
+          "type": "final"
+        }
+      }
+    ]
+  },
+  "parts": [
+    {
+      "id": "P1",
+      "measures": [
+        {
+          "clefs": [
+            {
+              "clef": {
+                "sign": "G",
+                "staffPosition": -2
+              }
+            }
+          ],
+          "sequences": [
+            {
+              "content": [
+                {
+                  "duration": {
+                    "base": "whole"
+                  },
+                  "id": "01a20ff3-2f4f-7b23-8b22-64d9e4d02e8a",
+                  "notes": [
+                    {
+                      "pitch": {
+                        "step": "B",
+                        "octave": 4
+                      },
+                      "notehead": {
+                        "shape": "slash"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "staff": 1
+            }
+          ]
+        },
+        {
+          "sequences": [
+            {
+              "content": [
+                {
+                  "duration": {
+                    "base": "half"
+                  },
+                  "id": "01a20ff3-2f50-78d0-9724-3a24838a7b84",
+                  "notes": [
+                    {
+                      "pitch": {
+                        "step": "B",
+                        "octave": 4
+                      },
+                      "notehead": {
+                        "shape": "slash"
+                      }
+                    }
+                  ],
+                  "stemDirection": "down"
+                },
+                {
+                  "duration": {
+                    "base": "quarter"
+                  },
+                  "id": "01a20ff3-2f50-7dda-9ff2-37cf99b7a1ab",
+                  "notes": [
+                    {
+                      "pitch": {
+                        "step": "B",
+                        "octave": 4
+                      },
+                      "notehead": {
+                        "shape": "slash"
+                      }
+                    }
+                  ],
+                  "stemDirection": "down"
+                },
+                {
+                  "duration": {
+                    "base": "eighth"
+                  },
+                  "id": "01a20ff3-2f50-7f3f-83c2-4ef35fb46175",
+                  "notes": [
+                    {
+                      "pitch": {
+                        "step": "B",
+                        "octave": 4
+                      },
+                      "notehead": {
+                        "shape": "slash"
+                      }
+                    }
+                  ],
+                  "stemDirection": "down"
+                },
+                {
+                  "duration": {
+                    "base": "eighth"
+                  },
+                  "id": "01a20ff3-2f50-77da-8064-710d8c6a9256",
+                  "notes": [
+                    {
+                      "pitch": {
+                        "step": "B",
+                        "octave": 4
+                      },
+                      "notehead": {
+                        "shape": "slash"
+                      }
+                    }
+                  ],
+                  "stemDirection": "down"
+                }
+              ],
+              "staff": 1
+            }
+          ],
+          "beams": [
+            {
+              "events": [
+                "01a20ff3-2f50-7f3f-83c2-4ef35fb46175",
+                "01a20ff3-2f50-77da-8064-710d8c6a9256"
+              ]
+            }
+          ]
+        },
+        {
+          "sequences": [
+            {
+              "content": [
+                {
+                  "duration": {
+                    "base": "breve"
+                  },
+                  "id": "01a20ff3-2f50-7b87-bc0e-cd200836f943",
+                  "notes": [
+                    {
+                      "pitch": {
+                        "step": "B",
+                        "octave": 4
+                      },
+                      "notehead": {
+                        "shape": "slash"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "staff": 1
+            }
+          ]
+        }
+      ],
+      "name": "Guitar",
+      "_x": {
+        "viritura": {
+          "instrumentId": "pluck.guitar.acoustic"
+        }
+      }
+    }
+  ],
+  "layouts": [
+    {
+      "id": "full-score",
+      "content": [
+        {
+          "type": "staff",
+          "sources": [
+            {
+              "part": "P1"
+            }
+          ],
+          "labelref": "name"
+        }
+      ]
+    }
+  ],
+  "scores": [
+    {
+      "name": "Full score",
+      "layout": "full-score"
+    }
+  ]
+}
