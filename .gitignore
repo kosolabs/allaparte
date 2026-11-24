@@ -7,3 +7,4 @@ target/
 /build/
 /static/score-engine/
 /worker-configuration.d.ts
+/fixtures/**/*.svg
