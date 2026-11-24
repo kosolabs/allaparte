@@ -22,9 +22,8 @@ open the link it prints:
 pnpm ensemble:create "Name"
 ```
 
-To edit a piece, run Viritura's editor against the local server, then open
-`http://localhost:5173/#live=<piece ID>`, where the piece ID is the last part
-of the piece's address:
+To edit a piece with its **Edit in Viritura** button, also run Viritura's editor
+against the local server:
 
 ```bash
 cd vendor/viritura

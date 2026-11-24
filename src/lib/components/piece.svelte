@@ -22,7 +22,7 @@
   <CircularProgress class="m-auto" aria-label="Loading" />
 {:then}
   {#if mnx}
-    <ScoreView {mnx} {ensembleId} />
+    <ScoreView {mnx} {ensembleId} pieceId={id} />
   {:else}
     <Alert color="error">This piece couldn't be loaded.</Alert>
   {/if}
