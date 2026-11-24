@@ -1,7 +1,8 @@
 # Allaparte Design
 
 > **Status:** Draft. Covers the viewer, ensembles, the workflow, annotations
-> and the architecture. Open items are listed at the end.
+> and the architecture. Open questions are at the end, and planned work is in
+> [GitHub issues](https://github.com/kosolabs/allaparte/issues).
 
 ## Summary
 
@@ -367,47 +368,17 @@ is too large for static assets and is kept in R2.
 | Stale host claims in durable pieces    | Editor claims host on its first edit     | Server and clients delete claims (tested); or patch the fork |
 | Show any combination of parts          | Renders a layout from the MNX            | Add a reader layout and score to the rendered MNX (tested)   |
 | Page turns placed for performers       | Not supported                            | Patch the fork or request upstream                           |
-| Octave clefs (guitar and bass 8vb)     | Converter adds an octave transposition the concert clef already carries | Known, not patched; a fix is on the fork's `parked/octave-clefs` branch |
-| Hidden chord symbols                   | Converter imports MusicXML `<harmony print-object="no">` as visible | Known, not patched; a fix that keeps but doesn't draw them is on `feat/hidden-chord-symbols` |
 
 Seven of the band's charts were converted from MuseScore and rendered. The
 music itself comes through intact: in the five checked note by note, every
 note, grace note and tuplet matches MuseScore's MusicXML (13,186 notes in
 all), extra voices on a staff are kept, and titles, composers, parts,
-transposition, articulations, dynamics and key changes are right. Two bugs
-affect most charts:
-
-- **Octave clefs** appear in 4 of the 5 charts, for guitar and bass. Their
-  notes and rhythm slashes are drawn an octave too high, colliding with chord
-  symbols. MuseScore's concert-score export gives the octave both in the clef
-  (treble-8vb, bass-8vb) and in `<for-part><part-transpose>`, and the
-  converter applies both.
-- **Hidden chord symbols** appear in 4 of the 5. The arranger repeats each
-  chord on every guitar slash, hidden, so MuseScore's playback strikes it
-  there; the converter shows them all, and they pile up.
-
-Smaller issues: the converter's generated layout reorders staves (Allaparte
-builds its own layouts, so this doesn't matter), a transposing part's label
-repeats its key ("Bb Clarinet in B♭"), tempo and rehearsal marks can appear
-above several staves, and one symbol in Quejas de Bandoneón renders as a
-missing-glyph box. A score MuseScore considers corrupted can't be exported
-at all until it's repaired in MuseScore.
+transposition, articulations, dynamics and key changes are right. A score
+MuseScore considers corrupted can't be exported at all until it's repaired in
+MuseScore.
 
 ## Open questions
 
-- **Revised MuseScore files.** How does a new MusicXML export update a piece
-  that already has edits and annotations? Needed before the band can rely on
-  Allaparte. MuseScore's experimental MNX export keeps bar and note IDs
-  stable across revisions, including inserted and deleted bars, so importing
-  content from the MusicXML and IDs from the MNX makes revisions exact; parts
-  match by name and position. Still to design: how a revision is applied to
-  a piece with edits. See [the revisions spike](spikes/musescore-revisions.md).
-- **Changes back to MuseScore.** Fixes made in Allaparte or the Viritura
-  editor should be able to reach the arranger's MuseScore file. Importing a
-  file into MuseScore creates a new score, so this may mean applying changes
-  by ID rather than re-importing a whole file. Whatever the route, import must
-  not drop anything the arranger authored, even what Allaparte never displays,
-  such as hidden chord symbols.
 - **Version history (later).** Restoring an old version can't replace the
   document with a snapshot: every device holding newer state would merge it
   back, undoing the restore. Applying the old version as new edits avoids
@@ -420,7 +391,3 @@ at all until it's repaired in MuseScore.
 
 - **Accidentals** come out right when the file's courtesy-accidental choices
   (`accidentalDisplay`) are removed. The spikes didn't strip them.
-- **iPad storage** survives: installing to the Home Screen and requesting
-  persistent storage (`navigator.storage.persist()`) keeps Safari from
-  clearing device copies and annotations.
-- **The app opens offline**, through its service worker. Not built yet.
