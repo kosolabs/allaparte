@@ -231,7 +231,7 @@ flowchart TB
     Signaling["Durable Object: signaling (one)"]
     Snapshots["Durable Objects: snapshot store (one per room)"]
     D1[("D1: ensembles, rooms, metadata")]
-    R2[("R2: original files")]
+    R2[("R2: original files, SoundFont")]
   end
 
   Device <-->|"live edits: WebRTC, device to device"| Editor
@@ -276,7 +276,8 @@ with ongoing maintenance. The expected cost is the Workers Paid plan's $5 a
 month minimum; the paid plan's per-request CPU limit is needed for merging
 large snapshots.
 
-- **Static assets:** the app and the self-hosted Viritura editor.
+- **Static assets:** the app is served by Allaparte's Worker, and the
+  self-hosted Viritura editor by a Worker of its own that has no code.
 - **WebRTC signaling** (`/live/signal`): one Durable Object holding every
   connection, using the WebSocket Hibernation API so idle connections cost
   nothing. It is a single object because the editor connects to a fixed
@@ -351,11 +352,11 @@ patches it only after a problem has been reproduced in Allaparte itself and
 working around it from outside would be harder. Changes that would suit
 Viritura generally can be offered upstream.
 
-At first, whoever needs the editor runs it on their own machine, with its API
-address set to Allaparte's server. Hosting it at editor.allaparte.com comes
-later, and needs a content security policy that allows Allaparte's server
-(the built-in one allows only Viritura's, so a same-origin proxy may avoid
-the change) and somewhere to serve the 119 MB SoundFont.
+The editor is hosted at editor.allaparte.com, unmodified. Its built-in content
+security policy allows only Viritura's servers and its own address, so
+Cloudflare routes give Allaparte's Worker the editor's server paths on that
+same address: its account check, live sessions, and the 119 MB SoundFont, which
+is too large for static assets and is kept in R2.
 
 | Need                                   | In Viritura today                        | Allaparte's approach                                         |
 | -------------------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
