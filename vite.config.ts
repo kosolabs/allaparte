@@ -21,7 +21,7 @@ export default defineConfig({
     port: 5180,
     strictPort: true,
     proxy,
-    watch: { ignored: ["**/vendor/viritura/engine/**"] },
+    watch: { ignored: ["**/tools/**", "**/vendor/viritura/engine/**"] },
   },
   preview: { port: 5180, strictPort: true, proxy },
   test: { include: ["{src,worker}/**/*.test.ts"] },
