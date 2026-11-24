@@ -3,16 +3,32 @@
   "name": "allaparte",
   "main": "worker/index.ts",
   "compatibility_date": "2026-11-01",
+  "routes": [
+    { "pattern": "app.allaparte.com", "custom_domain": true },
+    { "pattern": "editor.allaparte.com/auth/*", "zone_name": "allaparte.com" },
+    { "pattern": "editor.allaparte.com/live/*", "zone_name": "allaparte.com" },
+    {
+      "pattern": "editor.allaparte.com/sounds/Shan-SGM-Pro-15.sf2*",
+      "zone_name": "allaparte.com",
+    },
+  ],
+  "assets": {
+    "directory": "build",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/auth/*", "/live/*", "/sounds/*"],
+  },
   "vars": {
-    "ALLOWED_ORIGINS": "http://localhost:5180 http://localhost:5173",
+    "ALLOWED_ORIGINS": "http://localhost:5173",
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "allaparte",
-      "database_id": "local",
+      "database_id": "624c2af9-0bec-4b23-b707-499e70ebe286",
+      "preview_database_id": "local",
     },
   ],
+  "r2_buckets": [{ "binding": "SOUNDS", "bucket_name": "allaparte-sounds" }],
   "durable_objects": {
     "bindings": [
       { "name": "SIGNALING", "class_name": "Signaling" },

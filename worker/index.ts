@@ -1,5 +1,6 @@
 import { getEnsemble, registerPiece } from "./ensembles";
 import { isRegistered } from "./rooms";
+import { getSound } from "./sounds";
 
 export { RoomSnapshot } from "./room-snapshot";
 export { Signaling } from "./signaling";
@@ -8,6 +9,7 @@ const ID = "([a-z2-9]{16})";
 const ENSEMBLE = new RegExp(`^/api/ensembles/${ID}$`);
 const PIECE = new RegExp(`^/api/ensembles/${ID}/pieces/${ID}$`);
 const SNAPSHOT = new RegExp(`^/live/room/${ID}/snapshot$`);
+const SOUND = /^\/sounds\/([^/]+)$/;
 const LOCATION_HINT = "wnam";
 
 export default {
@@ -60,6 +62,9 @@ async function route(
     return registerPiece(env.DB, piece[1], piece[2]);
   }
 
+  const sound = SOUND.exec(pathname);
+  if (sound && request.method === "GET") return getSound(env.SOUNDS, sound[1]);
+
   if (pathname === "/auth/me") {
     return Response.json({ authenticated: false, user: null });
   }
@@ -70,7 +75,10 @@ async function route(
 function allowedOrigin(request: Request, env: Env): string | undefined {
   const origin = request.headers.get("Origin");
   if (!origin) return undefined;
-  const allowed = env.ALLOWED_ORIGINS.split(" ");
+  const allowed = [
+    new URL(request.url).origin,
+    ...env.ALLOWED_ORIGINS.split(" "),
+  ];
   return allowed.includes(origin) ? origin : undefined;
 }
 
