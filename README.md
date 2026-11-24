@@ -42,6 +42,28 @@ pnpm render score.mnx
 
 If the file has several scores, add the index of one, counting from 0.
 
+To see what an engine change does to the pictures, compare every score that the
+engine's tests lay out, before and after:
+
+```bash
+pnpm render:diff <before> [after]
+```
+
+Both are commits in `vendor/viritura`; `after` is the working tree unless given,
+leaving out files Git doesn't track yet. A new test only has a "before" picture
+if it is in the `before` commit, so commit the test ahead of the fix. This
+takes about six minutes and writes to `tools/render-diff/target/report`:
+`index.html` has every score, and `changes.md` has the ones that differ, to add
+to a pull request:
+
+```bash
+cd tools/render-diff/target/report
+gh pr edit <number> --body-file changes.md --attach files/<picture>.svg
+```
+
+`--body-file` replaces the description, so put the rest of it in `changes.md`
+first, and repeat `--attach` for each picture.
+
 ## Deploying
 
 Allaparte runs on Cloudflare: the app and its server at `app.allaparte.com`, and
