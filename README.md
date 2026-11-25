@@ -67,15 +67,11 @@ first, and repeat `--attach` for each picture.
 ## Deploying
 
 Allaparte runs on Cloudflare: the app and its server at `app.allaparte.com`, and
-Viritura's editor at `editor.allaparte.com`.
+Viritura's editor at `editor.allaparte.com`. Merging to `main` deploys both, once
+the tests pass. D1 migrations apply before the new server starts, so they must
+also work with the old one.
 
-```bash
-pnpm deploy:app
-pnpm deploy:editor
-```
-
-Deploy both when `vendor/viritura` changes. To create an ensemble there, add
-`--remote` to `pnpm ensemble:create`.
+To create an ensemble there, add `--remote` to `pnpm ensemble:create`.
 
 Setting up a new Cloudflare account, before the first deploy:
 
@@ -86,4 +82,6 @@ pnpm exec wrangler r2 object put allaparte-sounds/Shan-SGM-Pro-15.sf2 --remote \
   --file vendor/viritura/packages/audio/assets/sounds/Shan-SGM-Pro-15.sf2
 ```
 
-Put the database's ID in `wrangler.jsonc`.
+Put the database's ID in `wrangler.jsonc`. In the `allaparte-release` GitHub
+environment, set the secrets `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`,
+an account API token that can edit Workers, Workers routes and D1.

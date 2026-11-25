@@ -20,8 +20,8 @@
     "ensemble:list": "wrangler d1 execute allaparte --command \"SELECT * FROM ensembles\"",
     "render": "cargo run -q --manifest-path tools/render-mnx/Cargo.toml --",
     "render:diff": "node tools/render-diff/render-diff.mjs",
-    "deploy:app": "vite build && wrangler d1 migrations apply allaparte --remote && wrangler deploy",
-    "deploy:editor": "pnpm build:editor && wrangler deploy --config wrangler.editor.jsonc",
+    "deploy:app": "wrangler d1 migrations apply allaparte --remote && wrangler deploy",
+    "deploy:editor": "wrangler deploy --config wrangler.editor.jsonc",
     "build:editor": "cd vendor/viritura && VIRITURA_EXTERNAL_SOUNDFONT=true VITE_VIRITURA_API_BASE_URL=https://editor.allaparte.com pnpm --filter @viritura/editor build",
     "build:viritura": "cd vendor/viritura && pnpm install --frozen-lockfile && pnpm wasm:build && pnpm build:npm-packages && cd ../.. && node scripts/stage-engine.mjs"
   },
