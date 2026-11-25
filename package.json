@@ -19,6 +19,8 @@
     "ensemble:create": "node scripts/create-ensemble.mjs",
     "ensemble:list": "wrangler d1 execute allaparte --command \"SELECT * FROM ensembles\"",
     "render": "cargo run -q --manifest-path tools/render-mnx/Cargo.toml --",
+    "render:test": "node tools/render-diff/render-test.mjs",
+    "render:record": "node tools/render-diff/render-record.mjs",
     "render:diff": "node tools/render-diff/render-diff.mjs",
     "deploy:app": "wrangler d1 migrations apply allaparte --remote && wrangler deploy",
     "deploy:editor": "wrangler deploy --config wrangler.editor.jsonc",

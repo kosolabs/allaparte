@@ -1,15 +1,30 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { basename, join } from "node:path";
+import { TARGET } from "./environment.mjs";
 
+const REPORT = join(TARGET, "report");
 const FILES = "files";
 const CROP_MARGIN = 8;
+const MOST_OPEN_SECTIONS = 20;
 
-export function writeHtml(directory, title, renderings) {
-  const changed = renderings.filter((rendering) => rendering.changed);
-  const unchanged = renderings.filter((rendering) => !rendering.changed);
-  const sections = (list) =>
-    list.map((rendering) => htmlSection(directory, rendering)).join("\n");
-  const html = `<!doctype html>
+export function writeReport(title, renderings) {
+  rmSync(REPORT, { recursive: true, force: true });
+  mkdirSync(join(REPORT, FILES), { recursive: true });
+  writeFileSync(join(REPORT, "report.md"), markdown(renderings));
+  const html = join(REPORT, "index.html");
+  writeFileSync(html, htmlPage(title, renderings));
+  return html;
+}
+
+function htmlPage(title, renderings) {
+  const open = renderings.length <= MOST_OPEN_SECTIONS;
+  return `<!doctype html>
 <meta charset="utf-8">
 <title>${escape(title)}</title>
 <style>
@@ -20,10 +35,8 @@ export function writeHtml(directory, title, renderings) {
   img.musescore { width: auto; zoom: 3; }
 </style>
 <h1>${escape(title)}</h1>
-<h2>Changed (${changed.length})</h2>
-${sections(changed)}
-<h2>Unchanged (${unchanged.length})</h2>
-${sections(unchanged)}
+<p>Drawings: ${renderings.length}</p>
+${renderings.map((rendering) => htmlSection(rendering, open)).join("\n")}
 <script>
   for (const section of document.querySelectorAll("details")) {
     const template = section.querySelector("template");
@@ -33,97 +46,80 @@ ${sections(unchanged)}
   }
 </script>
 `;
-  writeFileSync(join(directory, "index.html"), html);
 }
 
-function htmlSection(directory, { name, mnx, changed, pages, museScore }) {
-  const image = (label, svg) =>
-    svg
-      ? `${label}<img loading="lazy" src="${publishSvg(directory, svg)}">`
-      : `<p>${label}: not drawn</p>`;
-  const shown = pages.filter((page) => page.changed === changed);
-  const images = shown.map(({ number, before, after }) => {
-    const page = pages.length > 1 ? ` (page ${number})` : "";
-    return changed
-      ? image(`Before${page}`, before) + image(`After${page}`, after)
-      : image(`Before and after${page}`, after);
-  });
-  return `<details${changed ? " open" : ""}>
+function htmlSection({ name, mnx, images, museScore }, open) {
+  return `<details${open ? " open" : ""}>
 <summary>${escape(name)}</summary>
 <template>
-MNX<iframe loading="lazy" src="${publishMnx(directory, mnx)}"></iframe>
-${images.join("\n")}
-${museScore ? htmlMuseScore(directory, museScore) : ""}
+MNX<iframe loading="lazy" src="${publishMnx(mnx)}"></iframe>
+${images.map(htmlImage).join("\n")}
+${museScore ? htmlMuseScore(museScore) : ""}
 </template>
 </details>`;
 }
 
-function htmlMuseScore(directory, pages) {
+function htmlImage({ label, svg }) {
+  return svg
+    ? `${label}<img loading="lazy" src="${publishSvg(svg)}">`
+    : `<p>${label}: not drawn</p>`;
+}
+
+function htmlMuseScore(pages) {
   if (pages.length === 0) return "<p>MuseScore couldn't draw this</p>";
   const images = pages.map(
-    (svg) =>
-      `<img class="musescore" loading="lazy" src="${publishAsIs(directory, svg)}">`,
+    (svg) => `<img class="musescore" loading="lazy" src="${publishAsIs(svg)}">`,
   );
   return `MuseScore${images.join("\n")}`;
 }
 
-export function writeMarkdown(directory, renderings) {
-  const sections = renderings
-    .filter((rendering) => rendering.changed)
-    .map((rendering) => markdownSection(directory, rendering));
-  writeFileSync(join(directory, "changes.md"), sections.join("\n"));
+function markdown(renderings) {
+  return renderings.map(markdownSection).join("\n");
 }
 
-function markdownSection(directory, { name, mnx, pages, museScore }) {
-  const image = (label, svg) =>
-    svg
-      ? `${label}:\n\n![${label}](${publishSvg(directory, svg)})\n`
-      : `${label}: not drawn\n`;
-  const images = pages
-    .filter((page) => page.changed)
-    .flatMap(({ number, before, after }) => {
-      const page = pages.length > 1 ? ` (page ${number})` : "";
-      return [image(`Before${page}`, before), image(`After${page}`, after)];
-    });
+function markdownSection({ name, mnx, images, museScore }) {
   return `### \`${name}\`
 
 <details>
 <summary>MNX</summary>
 
 \`\`\`json
-${readFileSync(join(directory, publishMnx(directory, mnx)), "utf8")}
+${readFileSync(join(REPORT, publishMnx(mnx)), "utf8")}
 \`\`\`
 
 </details>
 
-${images.join("\n")}
-${museScore ? markdownMuseScore(directory, museScore) : ""}`;
+${images.map(markdownImage).join("\n")}
+${museScore ? markdownMuseScore(museScore) : ""}`;
 }
 
-function markdownMuseScore(directory, pages) {
+function markdownImage({ label, svg }) {
+  return svg
+    ? `${label}:\n\n![${label}](${publishSvg(svg)})\n`
+    : `${label}: not drawn\n`;
+}
+
+function markdownMuseScore(pages) {
   if (pages.length === 0) return "MuseScore couldn't draw this\n";
-  const images = pages.map(
-    (svg) => `![MuseScore](${publishAsIs(directory, svg)})\n`,
-  );
+  const images = pages.map((svg) => `![MuseScore](${publishAsIs(svg)})\n`);
   return `MuseScore:\n\n${images.join("\n")}`;
 }
 
-function publishSvg(directory, file) {
-  return publish(directory, file, basename(file), crop);
+function publishSvg(file) {
+  return publish(file, basename(file), crop);
 }
 
-function publishMnx(directory, file) {
+function publishMnx(file) {
   const format = (mnx) => formatJson(JSON.parse(mnx));
-  return publish(directory, file, `${basename(file)}.txt`, format);
+  return publish(file, `${basename(file)}.txt`, format);
 }
 
-function publishAsIs(directory, file) {
-  return publish(directory, file, `musescore-${basename(file)}`, (svg) => svg);
+function publishAsIs(file) {
+  return publish(file, `musescore-${basename(file)}`, (svg) => svg);
 }
 
-function publish(directory, file, name, transform) {
-  mkdirSync(join(directory, FILES), { recursive: true });
-  const path = join(directory, FILES, name);
+function publish(file, name, transform) {
+  const path = join(REPORT, FILES, name);
   if (!existsSync(path)) {
     writeFileSync(path, transform(readFileSync(file, "utf8")));
   }
