@@ -6,6 +6,7 @@ use crate::render::DisplayList;
 use std::{
     cell::{Cell, RefCell},
     collections::{hash_map::DefaultHasher, HashMap},
+    ffi::OsString,
     fs::{self, File, OpenOptions},
     hash::{Hash, Hasher},
     io::Write,
@@ -82,9 +83,11 @@ fn store(content: &str, extension: &str) -> String {
     let mut hasher = DefaultHasher::new();
     content.hash(&mut hasher);
     let name = format!("{:016x}.{extension}", hasher.finish());
-    let path = directory().join(&name);
+    let path = PathBuf::from(env("RECORDER_PICTURES")).join(&name);
     if !path.exists() {
-        fs::write(path, content).unwrap();
+        let unfinished = path.with_extension(format!("{:?}", thread::current().id()));
+        fs::write(&unfinished, content).unwrap();
+        fs::rename(unfinished, path).unwrap();
     }
     name
 }
@@ -92,12 +95,12 @@ fn store(content: &str, extension: &str) -> String {
 fn manifest() -> &'static Mutex<File> {
     static MANIFEST: OnceLock<Mutex<File>> = OnceLock::new();
     MANIFEST.get_or_init(|| {
-        let path = directory().join("manifest.jsonl");
         let mut options = OpenOptions::new();
+        let path = env("RECORDER_MANIFEST");
         Mutex::new(options.create(true).append(true).open(path).unwrap())
     })
 }
 
-fn directory() -> PathBuf {
-    std::env::var_os("RENDER_DIFF_OUTPUT").unwrap().into()
+fn env(name: &str) -> OsString {
+    std::env::var_os(name).unwrap()
 }

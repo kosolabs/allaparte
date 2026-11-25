@@ -42,28 +42,40 @@ pnpm render score.mnx
 
 If the file has several scores, add the index of one, counting from 0.
 
-To see what an engine change does to the pictures, compare every score that the
-engine's tests lay out, before and after:
+To see what some of the engine's tests draw, give parts of their names:
 
 ```bash
+pnpm render:test <test>... [--musescore]
+```
+
+This tests the working tree of `vendor/viritura`. With `--musescore`, it also
+shows MuseScore's drawing of each whole score, converted to MusicXML by
+`vendor/viritura`. That needs MuseScore installed as `mscore`.
+
+To see what an engine change does to the drawings of every test, record them
+before and after the change, then compare:
+
+```bash
+pnpm render:record
 pnpm render:diff <before> [after]
 ```
 
-Both are commits in `vendor/viritura`; `after` is the working tree unless given,
-leaving out files Git doesn't track yet. A new test only has a "before" picture
-if it is in the `before` commit, so commit the test ahead of the fix. This
-takes about eight minutes and writes to `tools/render-diff/target/report`:
-`index.html` has every score, and `changes.md` has the ones that differ, to add
-to a pull request. With MuseScore installed as `mscore`, the ones that differ
-also show its drawing of the whole score, converted to MusicXML by
-`vendor/viritura` as checked out. To attach the pictures:
+`render:record` records the working tree, which takes about three minutes.
+`render:diff` compares two recorded commits; `after` is the working tree unless
+given. If MuseScore is installed, its drawings are included. A new test only has
+a "before" drawing if it is in the `before` commit, so commit the test ahead of
+the fix. Recordings are kept in `tools/render-diff/target`, which is safe to
+delete.
+
+`render:test` and `render:diff` write to `tools/render-diff/target/report`:
+`index.html`, and `report.md` to add to a pull request:
 
 ```bash
 cd tools/render-diff/target/report
-gh pr edit <number> --body-file changes.md --attach files/<picture>.svg
+gh pr edit <number> --body-file report.md --attach files/<picture>.svg
 ```
 
-`--body-file` replaces the description, so put the rest of it in `changes.md`
+`--body-file` replaces the description, so put the rest of it in `report.md`
 first, and repeat `--attach` for each picture.
 
 ## Deploying
