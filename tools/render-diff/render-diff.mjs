@@ -8,16 +8,20 @@ import {
   writeFileSync,
 } from "node:fs";
 import { basename, join } from "node:path";
+import { drawInMuseScore } from "./musescore.mjs";
 import { writeHtml, writeMarkdown } from "./report.mjs";
 
 const TOOL = import.meta.dirname;
 const VIRITURA = join(TOOL, "../../vendor/viritura");
 const TARGET = join(TOOL, "target");
 const REPORT = join(TARGET, "report");
-const LAYOUT_FUNCTIONS = {
-  "layout.rs": "layout_score_cached",
-  "layout/full_score.rs": "layout_full_score_cached",
-  "layout/mnx_layout/explicit.rs": "layout_with_mnx_scores_cached",
+const parse = (name) => ({ name, recorder: "parse(root_json.to_string()" });
+const layout = (name) => ({ name, recorder: "layout(score" });
+const RECORDED_FUNCTIONS = {
+  "promote/root.rs": parse("promote_root"),
+  "layout.rs": layout("layout_score_cached"),
+  "layout/full_score.rs": layout("layout_full_score_cached"),
+  "layout/mnx_layout/explicit.rs": layout("layout_with_mnx_scores_cached"),
 };
 
 const [before, after] = process.argv.slice(2);
@@ -31,13 +35,15 @@ const recordings = Object.entries(refs).map(([side, ref]) => {
 });
 const renderings = compare(...recordings);
 
+const changed = renderings.filter((rendering) => rendering.changed);
+drawInMuseScore(changed);
+
 rmSync(REPORT, { recursive: true, force: true });
 mkdirSync(REPORT, { recursive: true });
 const title = `${before} → ${after ?? "working tree"}`;
 writeHtml(REPORT, title, renderings);
 writeMarkdown(REPORT, renderings);
 
-const changed = renderings.filter((rendering) => rendering.changed);
 console.log(`${changed.length} of ${renderings.length} renderings differ`);
 console.log(join(REPORT, "index.html"));
 
@@ -64,8 +70,8 @@ function instrument(engine) {
   const source = join(engine, "src");
   copyFileSync(join(TOOL, "recorder.rs"), join(source, "recorder.rs"));
   edit(join(source, "lib.rs"), (code) => `${code}\nmod recorder;\n`);
-  for (const [file, name] of Object.entries(LAYOUT_FUNCTIONS)) {
-    edit(join(source, file), (code) => recordCalls(code, name));
+  for (const [file, recorded] of Object.entries(RECORDED_FUNCTIONS)) {
+    edit(join(source, file), (code) => recordCalls(code, recorded));
   }
 }
 
@@ -73,19 +79,17 @@ function edit(file, change) {
   writeFileSync(file, change(readFileSync(file, "utf8")));
 }
 
-function recordCalls(code, name) {
-  const signature = new RegExp(
-    `pub fn ${name}\\(([^)]*)\\) -> DisplayList \\{`,
-  );
+function recordCalls(code, { name, recorder }) {
+  const signature = new RegExp(`pub fn ${name}\\(([^)]*)\\) -> ([^{]+) \\{`);
   if (!signature.test(code)) throw new Error(`Can't find ${name}`);
-  return code.replace(signature, (_, parameters) => {
+  return code.replace(signature, (_, parameters, result) => {
     const names = parameters.matchAll(/(\w+):(?!:)/g);
     const args = [...names].map(([, parameter]) => parameter).join(", ");
-    return `pub fn ${name}(${parameters.replace(/\bmut (?=\w+: )/, "")}) -> DisplayList {
-    crate::recorder::record(score, || ${name}_unrecorded(${args}))
+    return `pub fn ${name}(${parameters.replace(/\bmut (?=\w+: )/, "")}) -> ${result} {
+    crate::recorder::${recorder}, || ${name}_unrecorded(${args}))
 }
 
-fn ${name}_unrecorded(${parameters}) -> DisplayList {`;
+fn ${name}_unrecorded(${parameters}) -> ${result} {`;
   });
 }
 

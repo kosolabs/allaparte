@@ -52,9 +52,11 @@ pnpm render:diff <before> [after]
 Both are commits in `vendor/viritura`; `after` is the working tree unless given,
 leaving out files Git doesn't track yet. A new test only has a "before" picture
 if it is in the `before` commit, so commit the test ahead of the fix. This
-takes about six minutes and writes to `tools/render-diff/target/report`:
+takes about eight minutes and writes to `tools/render-diff/target/report`:
 `index.html` has every score, and `changes.md` has the ones that differ, to add
-to a pull request:
+to a pull request. With MuseScore installed as `mscore`, the ones that differ
+also show its drawing of the whole score, converted to MusicXML by
+`vendor/viritura` as checked out. To attach the pictures:
 
 ```bash
 cd tools/render-diff/target/report
