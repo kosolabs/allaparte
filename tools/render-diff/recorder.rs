@@ -4,8 +4,8 @@ use crate::model::Score;
 use crate::render::svg::{display_list_to_svg_pages, SvgExportConfig};
 use crate::render::DisplayList;
 use std::{
-    cell::Cell,
-    collections::hash_map::DefaultHasher,
+    cell::{Cell, RefCell},
+    collections::{hash_map::DefaultHasher, HashMap},
     fs::{self, File, OpenOptions},
     hash::{Hash, Hasher},
     io::Write,
@@ -19,9 +19,16 @@ const MM_PER_UNIT: f64 = 25.4 / 96.0;
 thread_local! {
     static DEPTH: Cell<usize> = const { Cell::new(0) };
     static COUNT: Cell<usize> = const { Cell::new(0) };
+    static PARSED: RefCell<HashMap<String, String>> = RefCell::default();
 }
 
-pub fn record(score: &Score, layout: impl FnOnce() -> DisplayList) -> DisplayList {
+pub fn parse<E>(mnx: String, parse: impl FnOnce() -> Result<Score, E>) -> Result<Score, E> {
+    let score = parse()?;
+    PARSED.with_borrow_mut(|parsed| parsed.insert(write(&score), mnx));
+    Ok(score)
+}
+
+pub fn layout(score: &Score, layout: impl FnOnce() -> DisplayList) -> DisplayList {
     DEPTH.set(DEPTH.get() + 1);
     let list = layout();
     DEPTH.set(DEPTH.get() - 1);
@@ -37,10 +44,20 @@ fn save(score: &Score, list: &DisplayList) {
     let entry = serde_json::json!({
         "test": thread.name().unwrap_or("unnamed thread"),
         "call": COUNT.get(),
-        "mnx": store(&serde_json::to_string(score).unwrap(), "mnx"),
+        "mnx": store(&original(score), "mnx"),
         "pages": svgs(list).iter().map(|svg| store(svg, "svg")).collect::<Vec<_>>(),
     });
     writeln!(manifest().lock().unwrap(), "{entry}").unwrap();
+}
+
+/// The MNX the test parsed, or the engine's own if the test changed the score.
+fn original(score: &Score) -> String {
+    let written = write(score);
+    PARSED.with_borrow(|parsed| parsed.get(&written).cloned().unwrap_or(written))
+}
+
+fn write(score: &Score) -> String {
+    serde_json::to_string(score).unwrap()
 }
 
 fn svgs(list: &DisplayList) -> Vec<String> {
