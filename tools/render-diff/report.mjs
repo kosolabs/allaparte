@@ -1,23 +1,16 @@
-import {
-  existsSync,
-  mkdirSync,
-  readFileSync,
-  rmSync,
-  writeFileSync,
-} from "node:fs";
-import { basename, join } from "node:path";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 import { TARGET } from "./environment.mjs";
 
-const REPORT = join(TARGET, "report");
+const REPORTS = join(TARGET, "reports");
 const FILES = "files";
 const CROP_MARGIN = 8;
 const MOST_OPEN_SECTIONS = 20;
 
-export function writeReport(title, renderings) {
-  rmSync(REPORT, { recursive: true, force: true });
-  mkdirSync(join(REPORT, FILES), { recursive: true });
-  writeFileSync(join(REPORT, "report.md"), markdown(renderings));
-  const html = join(REPORT, "index.html");
+export function writeReport(name, title, renderings) {
+  mkdirSync(join(REPORTS, FILES), { recursive: true });
+  const html = join(REPORTS, `${name}.html`);
   writeFileSync(html, htmlPage(title, renderings));
   return html;
 }
@@ -33,6 +26,7 @@ function htmlPage(title, renderings) {
   iframe { border: 1px solid #ccc; height: 14rem; resize: vertical; width: 100%; }
   img { border: 1px solid #ccc; display: block; margin: 0.25rem 0 1rem; max-width: 100%; width: 100%; }
   img.musescore { width: auto; zoom: 3; }
+  img.verovio { width: auto; }
 </style>
 <h1>${escape(title)}</h1>
 <p>Drawings: ${renderings.length}</p>
@@ -48,13 +42,13 @@ ${renderings.map((rendering) => htmlSection(rendering, open)).join("\n")}
 `;
 }
 
-function htmlSection({ name, mnx, images, museScore }, open) {
+function htmlSection({ name, mnx, images, others = [] }, open) {
   return `<details${open ? " open" : ""}>
 <summary>${escape(name)}</summary>
 <template>
 MNX<iframe loading="lazy" src="${publishMnx(mnx)}"></iframe>
 ${images.map(htmlImage).join("\n")}
-${museScore ? htmlMuseScore(museScore) : ""}
+${others.map(htmlOther).join("\n")}
 </template>
 </details>`;
 }
@@ -65,65 +59,37 @@ function htmlImage({ label, svg }) {
     : `<p>${label}: not drawn</p>`;
 }
 
-function htmlMuseScore(pages) {
-  if (pages.length === 0) return "<p>MuseScore couldn't draw this</p>";
+function htmlOther({ name, pages }) {
+  if (pages.length === 0) return `<p>${name}: not drawn</p>`;
+  const id = name.toLowerCase();
   const images = pages.map(
-    (svg) => `<img class="musescore" loading="lazy" src="${publishAsIs(svg)}">`,
+    (svg) => `<img class="${id}" loading="lazy" src="${publishAsIs(svg)}">`,
   );
-  return `MuseScore${images.join("\n")}`;
+  return `${name}${images.join("\n")}`;
 }
 
-function markdown(renderings) {
-  return renderings.map(markdownSection).join("\n");
+const publishSvg = once((file) => publish(file, ".svg", crop));
+const publishAsIs = once((file) => publish(file, ".svg", (svg) => svg));
+const publishMnx = once((file) =>
+  publish(file, ".mnx.txt", (mnx) => formatJson(JSON.parse(mnx))),
+);
+
+function once(publisher) {
+  const published = new Map();
+  return (file) => {
+    if (!published.has(file)) published.set(file, publisher(file));
+    return published.get(file);
+  };
 }
 
-function markdownSection({ name, mnx, images, museScore }) {
-  return `### \`${name}\`
-
-<details>
-<summary>MNX</summary>
-
-\`\`\`json
-${readFileSync(join(REPORT, publishMnx(mnx)), "utf8")}
-\`\`\`
-
-</details>
-
-${images.map(markdownImage).join("\n")}
-${museScore ? markdownMuseScore(museScore) : ""}`;
-}
-
-function markdownImage({ label, svg }) {
-  return svg
-    ? `${label}:\n\n![${label}](${publishSvg(svg)})\n`
-    : `${label}: not drawn\n`;
-}
-
-function markdownMuseScore(pages) {
-  if (pages.length === 0) return "MuseScore couldn't draw this\n";
-  const images = pages.map((svg) => `![MuseScore](${publishAsIs(svg)})\n`);
-  return `MuseScore:\n\n${images.join("\n")}`;
-}
-
-function publishSvg(file) {
-  return publish(file, basename(file), crop);
-}
-
-function publishMnx(file) {
-  const format = (mnx) => formatJson(JSON.parse(mnx));
-  return publish(file, `${basename(file)}.txt`, format);
-}
-
-function publishAsIs(file) {
-  return publish(file, `musescore-${basename(file)}`, (svg) => svg);
-}
-
-function publish(file, name, transform) {
-  const path = join(REPORT, FILES, name);
-  if (!existsSync(path)) {
-    writeFileSync(path, transform(readFileSync(file, "utf8")));
-  }
-  return `${FILES}/${name}`;
+// Named by content, so that reports share what they have in common.
+function publish(file, extension, transform) {
+  const content = transform(readFileSync(file, "utf8"));
+  const hash = createHash("sha256").update(content).digest("hex");
+  const name = `${FILES}/${hash.slice(0, 16)}${extension}`;
+  const path = join(REPORTS, name);
+  if (!existsSync(path)) writeFileSync(path, content);
+  return name;
 }
 
 function crop(svg) {

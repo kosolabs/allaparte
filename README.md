@@ -45,12 +45,14 @@ If the file has several scores, add the index of one, counting from 0.
 To see what some of the engine's tests draw, give parts of their names:
 
 ```bash
-pnpm render:test <test>... [--musescore]
+pnpm render:test <test>... [--musescore] [--verovio]
 ```
 
-This tests the working tree of `vendor/viritura`. With `--musescore`, it also
-shows MuseScore's drawing of each whole score, converted to MusicXML by
-`vendor/viritura`. That needs MuseScore installed as `mscore`.
+This tests the working tree of `vendor/viritura`. With `--musescore` or
+`--verovio`, it also shows that engine's drawing of each whole score, converted
+to MusicXML by `vendor/viritura`. They need MuseScore installed as `mscore`, or
+Verovio as `verovio`. Where MuseScore and Verovio disagree, check the MusicXML
+spec: MuseScore 4.7 misplaces clefs on staves without five lines.
 
 To see what an engine change does to the drawings of every test, record them
 before and after the change, then compare:
@@ -62,21 +64,14 @@ pnpm render:diff <before> [after]
 
 `render:record` records the working tree, which takes about three minutes.
 `render:diff` compares two recorded commits; `after` is the working tree unless
-given. If MuseScore is installed, its drawings are included. A new test only has
-a "before" drawing if it is in the `before` commit, so commit the test ahead of
-the fix. Recordings are kept in `tools/render-diff/target`, which is safe to
-delete.
+given. A new test only has a "before" drawing if it is in the `before` commit,
+so commit the test ahead of the fix. Recordings are kept in
+`tools/render-diff/target`, which is safe to delete.
 
-`render:test` and `render:diff` write to `tools/render-diff/target/report`:
-`index.html`, and `report.md` to add to a pull request:
-
-```bash
-cd tools/render-diff/target/report
-gh pr edit <number> --body-file report.md --attach files/<picture>.svg
-```
-
-`--body-file` replaces the description, so put the rest of it in `report.md`
-first, and repeat `--attach` for each picture.
+`render:test` and `render:diff` print the path of the report they write to
+`tools/render-diff/target/reports`, named after what it shows and the engine
+version it drew. Reports share the pictures in `files` beside them, so old ones
+cost little; delete the folder when it gets big.
 
 ## Deploying
 
