@@ -1,7 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { byName, readManifest } from "./engine.mjs";
-import { drawInMuseScore } from "./musescore.mjs";
 import { recordingOf, treeOf, workingTree } from "./recordings.mjs";
 import { writeReport } from "./report.mjs";
 
@@ -9,12 +8,14 @@ const [before, after] = process.argv.slice(2);
 if (!before) throw new Error("Usage: pnpm render:diff <before> [after]");
 const afterName = after ?? "working tree";
 
-const befores = recorded(before, treeOf(before));
-const afters = recorded(afterName, after ? treeOf(after) : workingTree());
+const beforeTree = treeOf(before);
+const afterTree = after ? treeOf(after) : workingTree();
+const befores = recorded(before, beforeTree);
+const afters = recorded(afterName, afterTree);
 const changed = changes(befores, afters);
-drawInMuseScore(changed);
 console.log(`${changed.length} of ${afters.size} renderings differ`);
-console.log(writeReport(`${before} → ${afterName}`, changed));
+const name = `diff-${beforeTree.slice(0, 8)}-${afterTree.slice(0, 8)}`;
+console.log(writeReport(name, `${before} → ${afterName}`, changed));
 
 function recorded(name, tree) {
   const recording = recordingOf(tree);
