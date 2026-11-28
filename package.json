@@ -16,7 +16,7 @@
     "lint": "prettier --check . && eslint .",
     "test:unit": "vitest run",
     "test": "pnpm run \"/^(build|check|lint|test:unit)$/\"",
-    "ensemble:create": "node scripts/create-ensemble.mjs",
+    "ensemble:create": "tsx scripts/create-ensemble.ts",
     "ensemble:list": "wrangler d1 execute allaparte --command \"SELECT * FROM ensembles\"",
     "render": "cargo run -q --manifest-path tools/render-mnx/Cargo.toml --",
     "render:test": "node tools/render-diff/render-test.mjs",
@@ -25,7 +25,7 @@
     "deploy:app": "wrangler d1 migrations apply allaparte --remote && wrangler deploy",
     "deploy:editor": "wrangler deploy --config wrangler.editor.jsonc",
     "build:editor": "cd vendor/viritura && VIRITURA_EXTERNAL_SOUNDFONT=true VITE_VIRITURA_API_BASE_URL=https://editor.allaparte.com pnpm --filter @viritura/editor build",
-    "build:viritura": "cd vendor/viritura && pnpm install --frozen-lockfile && pnpm wasm:build && pnpm build:npm-packages && cd ../.. && node scripts/stage-engine.mjs"
+    "build:viritura": "cd vendor/viritura && pnpm install --frozen-lockfile && pnpm wasm:build && pnpm build:npm-packages && cd ../.. && tsx scripts/stage-engine.ts"
   },
   "imports": {
     "#lib/*": "./src/lib/*",
@@ -60,6 +60,7 @@
     "svelte": "^5.57.3",
     "svelte-check": "4.7.8",
     "tailwindcss": "4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "6.0.3",
     "typescript-eslint": "8.72.1",
     "vite": "8.3.5",
